@@ -8,6 +8,7 @@ import { elements } from "./views/base";
 - Like recipes
 */
 const state = {};
+
 const controlSearch = async () => {
   //1. Get query from view
   const query = searchView.getInput();
