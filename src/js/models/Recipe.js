@@ -70,9 +70,9 @@ export default class Recipe {
         const arrCount = arrIng.slice(0, unitIndex);
         let count;
         if (arrCount.length === 1) {
-          count = eval(arrIng[0].replace("-", "+"));
+          count = eval(arrIng[0].replace("-", "+")).toFixed(2);
         } else {
-          count = eval(arrIng.slice(0, unitIndex).join("+"));
+          count = eval(arrIng.slice(0, unitIndex).join("+")).toFixed(2);
         }
         objIng = {
           count,
