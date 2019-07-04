@@ -1,5 +1,6 @@
 import Search from "./models/Search";
 import Recipe from "./models/Recipe";
+import List from "./models/List";
 import * as searchView from "./views/searchView";
 import * as recipeView from "./views/recipeView";
 import { elements, renderLoader, clearLoader } from "./views/base";
@@ -37,31 +38,6 @@ const controlSearch = async () => {
   }
 };
 
-elements.searchForm.addEventListener("submit", e => {
-  e.preventDefault();
-  controlSearch();
-});
-
-elements.searchResultPage.addEventListener("click", e => {
-  const btn = e.target.closest(".btn-inline");
-  if (btn) {
-    searchView.clearResults();
-    searchView.renderResults(state.search.result, parseInt(btn.dataset.goto));
-  }
-});
-
-elements.searchRecipe.addEventListener("click", e => {
-  if (e.target.matches(".btn-decrease, .btn-decrease *")) {
-    if (state.recipe.servings > 1) {
-      state.recipe.updateServings("dec");
-      recipeView.updateServingsIngredients(state.recipe);
-    }
-  } else if (e.target.matches(".btn-increase, .btn-increase *")) {
-    state.recipe.updateServings("inc");
-    recipeView.updateServingsIngredients(state.recipe);
-  }
-});
-
 const controlRecipe = async () => {
   const id = window.location.hash.replace("#", "");
   if (id) {
@@ -93,6 +69,34 @@ const controlRecipe = async () => {
     }
   }
 };
+
+const constrolList = () => {};
+
+elements.searchForm.addEventListener("submit", e => {
+  e.preventDefault();
+  controlSearch();
+});
+
+elements.searchResultPage.addEventListener("click", e => {
+  const btn = e.target.closest(".btn-inline");
+  if (btn) {
+    searchView.clearResults();
+    searchView.renderResults(state.search.result, parseInt(btn.dataset.goto));
+  }
+});
+
+elements.searchRecipe.addEventListener("click", e => {
+  if (e.target.matches(".btn-decrease, .btn-decrease *")) {
+    if (state.recipe.servings > 1) {
+      state.recipe.updateServings("dec");
+      recipeView.updateServingsIngredients(state.recipe);
+    }
+  } else if (e.target.matches(".btn-increase, .btn-increase *")) {
+    state.recipe.updateServings("inc");
+    recipeView.updateServingsIngredients(state.recipe);
+  }
+});
+
 ["hashchange", "load"].forEach(event => {
   window.addEventListener(event, controlRecipe);
 });
