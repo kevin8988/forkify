@@ -50,6 +50,18 @@ elements.searchResultPage.addEventListener("click", e => {
   }
 });
 
+elements.searchRecipe.addEventListener("click", e => {
+  if (e.target.matches(".btn-decrease, .btn-decrease *")) {
+    if (state.recipe.servings > 1) {
+      state.recipe.updateServings("dec");
+      recipeView.updateServingsIngredients(state.recipe);
+    }
+  } else if (e.target.matches(".btn-increase, .btn-increase *")) {
+    state.recipe.updateServings("inc");
+    recipeView.updateServingsIngredients(state.recipe);
+  }
+});
+
 const controlRecipe = async () => {
   const id = window.location.hash.replace("#", "");
   if (id) {
