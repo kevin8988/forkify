@@ -1,9 +1,11 @@
 import Search from "./models/Search";
 import Recipe from "./models/Recipe";
 import List from "./models/List";
+import Likes from "./models/Likes";
 import * as searchView from "./views/searchView";
 import * as listView from "./views/listView";
 import * as recipeView from "./views/recipeView";
+import * as likesView from "./views/likesView";
 import { elements, renderLoader, clearLoader } from "./views/base";
 /* Global State of the app
 - Search object
@@ -64,14 +66,14 @@ const controlRecipe = async () => {
 
       //5. Render the recipe
       clearLoader();
-      recipeView.renderRecipe(state.recipe);
+      recipeView.renderRecipe(state.recipe, state.likes.isLiked(id));
     } catch (error) {
       alert(error);
     }
   }
 };
 
-const constrolList = () => {
+const controlList = () => {
   //1. Create a new list if there are none
   if (!state.list) {
     state.list = new List();
@@ -82,6 +84,30 @@ const constrolList = () => {
     const item = state.list.addItem(el.count, el.unit, el.ingredient);
     listView.renderItem(item);
   });
+};
+
+const controlLike = () => {
+  if (!state.likes) {
+    state.likes = new Likes();
+  }
+  const currId = state.recipe.id;
+
+  if (!state.likes.isLiked(currId)) {
+    const newLike = state.likes.addLike(
+      currId,
+      state.recipe.title,
+      state.recipe.author,
+      state.recipe.img
+    );
+    likesView.toggleLikeBtn(true);
+    likesView.renderLikes(newLike);
+  } else {
+    state.likes.deleteLike(currId);
+    likesView.toggleLikeBtn(false);
+    likesView.deleteLike(currId);
+  }
+
+  likesView.toggleLikeMenu(state.likes.getNumLikes());
 };
 
 elements.searchForm.addEventListener("submit", e => {
@@ -107,7 +133,9 @@ elements.searchRecipe.addEventListener("click", e => {
     state.recipe.updateServings("inc");
     recipeView.updateServingsIngredients(state.recipe);
   } else if (e.target.matches(".recipe__btn--add, .recipe__btn--add *")) {
-    constrolList();
+    controlList();
+  } else if (e.target.matches(".recipe__love, .recipe__love *")) {
+    controlLike();
   }
 });
 
@@ -116,11 +144,20 @@ elements.searchShopping.addEventListener("click", e => {
   if (e.target.matches(".shopping__delete, .shopping__delete *")) {
     state.list.deleteItem(id);
     listView.deleteItem(id);
-  }else if(e.target.matches(".shopping__count-value")){
+  } else if (e.target.matches(".shopping__count-value")) {
     state.list.updateCount(id, e.target.value);
   }
 });
 
 ["hashchange", "load"].forEach(event => {
   window.addEventListener(event, controlRecipe);
+});
+
+window.addEventListener("load", () => {
+  state.likes = new Likes();
+  state.likes.readStorage();
+  likesView.toggleLikeMenu(state.likes.getNumLikes());  
+  state.likes.likes.forEach(el => {
+    likesView.renderLikes(el);
+  });
 });
